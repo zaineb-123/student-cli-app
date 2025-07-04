@@ -7,80 +7,65 @@ import readLineSync, { question } from 'readline-sync';
 
 
 const sleep = (ms = 2000) => new Promise(resolve => setTimeout(resolve, ms));
-//==== Use meaningful english naming for functions for example:
-// bienvenu() => showWelcomeText()
-async function bienvenu() {
+async function showWelcomeText() {
     const title = chalkAnimation.rainbow("Espace Etudiant\n");
     await sleep(2000);
     title.stop();
-//==== Remove unnacessary extra lines
-    
 }
 
-//==== Use meaningful english naming for functions for example:
-// valideremail() => validateEmail()
-function valideremail(email){
-    //==== Use a regex to validate an email, not all user have gmail 
-    const estvalide=/^[a-zA-Z0-9]+@gmail\.com$/;
+function validateEmail(email){
+    const estvalide=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return estvalide.test(email);
 }
 
-//==== Use meaningful english naming for functions
-function valideranne(annee){
-    //==== Add more validation for the year, the year should be between 2000 and 2025
+function validateYear(year){
     const estvalide=/^\d{4}$/;
-    return estvalide.test(annee);
+    return estvalide.test(year) && year >= 2000 && year <= 2025;
 }
 
-//==== Use meaningful english naming for functions
-async function ajouteretudiant() {
-    console.log(chalk.blue.bold.italic('veuillez saisir vos informations personelles'));
-    const question = await inquirer.prompt([
-        { name: 'nom', message: 'Nom complet :' },
-        { name:'email', message:' votre email:',  validate: (input) => valideremail(input) ? true : 'email doit etre une adresse correcte @gmail.com'},
-        {name:'numero etudiant',message:'votre numero'},
-        {name:'annee', message:'annee ', validate: (input) => valideranne(input)? true:'l\'anne doit contenir exactement 4 chifffre '},
+async function addStudent() {
+    console.log(chalk.blue.bold.italic('Please enter your personal information'));
+    const studentinfo = await inquirer.prompt([
+        { name: 'name', message: 'full name  :' },
+        { name:'email', message:'email:',  validate: (input) => validateEmail(input) ? true : 'Email must be a valid address'},
+        {name:'studentNumber',message:'student number'},
+        {name:'year', message:'year ', validate: (input) => validateYear(input)? true:'Year must be a 4-digit number between 2000 and 2025'},
     ]);
-    const filiere = await question1();
-    const classe = await question2();
+    const department = await askDepartment();
+    const classgroup = await askClass();
 
-    const resultat = {
-        question,
-        filiere,
-        classe,
+    const result = {
+        ... studentinfo,
+        department,
+        classgroup,
     };
-    console.log(resultat);
-    return resultat;
+    console.table(result);
+    return result;
 }
 
-//==== Use meaningful english naming for functions
-async function question1() {
-    const {filiere} = await inquirer.prompt({
-        name:'filiere',
+async function askDepartment() {
+    const {department} = await inquirer.prompt({
+        name:'department',
         type: 'list',
-        message:'filiere:',
-        choices:['reseaux','multimedia','developpement','genie logiciel'],
-
+        message:'choose your department:',
+        choices:['Networks', 'Multimedia', 'Development', 'Software Engineering'],
     });
-    return filiere;
-    
+    return department;  
 }
 
-//==== Use meaningful english naming for functions
-async function question2() {
-    const {classe} = await inquirer.prompt({
-        name:'classe',
+async function askClass() {
+    const {classgroup} = await inquirer.prompt({
+        name:'classgroup',
         type: 'list',
-        message:'classe:',
+        message:'choose your class:',
         choices:['A1','A2','A3'],
-
     });
-    return classe;
+    return classgroup;
 }
 
 async function main () {
-    await bienvenu();
-    await ajouteretudiant();
+    await showWelcomeText();
+    await addStudent();
     
 }
 main();
