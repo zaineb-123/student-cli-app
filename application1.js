@@ -4,6 +4,10 @@ import gradient from 'gradient-string';
 import chalkAnimation from 'chalk-animation';
 import figlet from 'figlet';
 import readLineSync, { question } from 'readline-sync';
+import fs from 'fs';
+
+const rawData = fs.readFileSync('data.json', 'utf-8');
+const data = JSON.parse(rawData);
 
 
 const sleep = (ms = 2000) => new Promise(resolve => setTimeout(resolve, ms));
@@ -48,7 +52,7 @@ async function askDepartment() {
         name:'department',
         type: 'list',
         message:'choose your department:',
-        choices:['Networks', 'Multimedia', 'Development', 'Software Engineering'],
+        choices: data.department
     });
     return department;  
 }
@@ -58,7 +62,7 @@ async function askClass() {
         name:'classgroup',
         type: 'list',
         message:'choose your class:',
-        choices:['A1','A2','A3'],
+        choices: data.classgroup
     });
     return classgroup;
 }
