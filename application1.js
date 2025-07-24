@@ -5,6 +5,7 @@ import chalkAnimation from 'chalk-animation';
 import figlet from 'figlet';
 import readLineSync, { question } from 'readline-sync';
 import fs from 'fs';
+import { KeyObject } from "crypto";
 
 const rawData = fs.readFileSync('data.json', 'utf-8');
 const data = JSON.parse(rawData);
@@ -36,7 +37,7 @@ async function addStudent() {
         {name:'year', message:'year ', validate: (input) => validateYear(input)? true:'Year must be a 4-digit number between 2000 and 2025'},
     ]);
     const department = await askDepartment();
-    const classgroup = await askClass();
+    const classgroup = await askClass(department);
 
     const result = {
         ... studentinfo,
@@ -52,17 +53,17 @@ async function askDepartment() {
         name:'department',
         type: 'list',
         message:'choose your department:',
-        choices: data.department
+        choices: Object.keys(data.department)
     });
     return department;  
 }
 
-async function askClass() {
+async function askClass(department) {
     const {classgroup} = await inquirer.prompt({
         name:'classgroup',
         type: 'list',
         message:'choose your class:',
-        choices: data.classgroup
+        choices: data.department[department]
     });
     return classgroup;
 }
