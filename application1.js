@@ -4,11 +4,13 @@ import gradient from 'gradient-string';
 import chalkAnimation from 'chalk-animation';
 import figlet from 'figlet';
 import readLineSync, { question } from 'readline-sync';
-import fs from 'fs';
-import { KeyObject } from "crypto";
+import fetch from 'node-fetch';
 
-const rawData = fs.readFileSync('data.json', 'utf-8');
-const data = JSON.parse(rawData);
+async function fetchData() {
+    const response = await fetch("https://raw.githubusercontent.com/zaineb-123/student-cli-app/refs/heads/main/data.json");
+    const data = await response.json();
+    return(data);
+  }
 
 
 const sleep = (ms = 2000) => new Promise(resolve => setTimeout(resolve, ms));
@@ -36,8 +38,10 @@ async function addStudent() {
         {name:'studentNumber',message:'student number'},
         {name:'year', message:'year ', validate: (input) => validateYear(input)? true:'Year must be a 4-digit number between 2000 and 2025'},
     ]);
-    const department = await askDepartment();
-    const classgroup = await askClass(department);
+    const data = await fetchData();
+    const department = await askDepartment(data);
+    const classgroup = await askClass(data,department);
+    
 
     const result = {
         ... studentinfo,
@@ -48,7 +52,7 @@ async function addStudent() {
     return result;
 }
 
-async function askDepartment() {
+async function askDepartment(data) {
     const {department} = await inquirer.prompt({
         name:'department',
         type: 'list',
@@ -58,7 +62,7 @@ async function askDepartment() {
     return department;  
 }
 
-async function askClass(department) {
+async function askClass(data,department) {
     const {classgroup} = await inquirer.prompt({
         name:'classgroup',
         type: 'list',
